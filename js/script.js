@@ -99,7 +99,11 @@ PhaserGame.prototype = {
     },
     preload: function () {
         //Preload the sprite images
-        this.load.baseURL = '/PracticeShooter';
+        //For live
+        this.load.baseURL = '/PracticeShooter/';
+
+        //For dev
+        //this.load.baseURL = '/';
         this.load.image('background', 'img/cool-space-background2.jpg');
         this.load.image('player', 'img/ship1.png');
         this.load.image('missile', 'img/missile.png');
