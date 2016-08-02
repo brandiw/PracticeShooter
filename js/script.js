@@ -15,8 +15,9 @@ var PhaserGame = function () {
 };
 
 /*
-* Begin Missile Logic
+* Begin Weapon Type Logic
 */
+//MISSILE
 var Missile = function (game, key) {
     Phaser.Sprite.call(this, game, 0, 0, key);
 
@@ -51,9 +52,27 @@ Missile.prototype.update = function () {
         this.scale.y += this.scaleSpeed;
     }
 };
+
+//CANNON
+var Cannon = function(game, key){
+  Phaser.Sprite.call(this, game, 0, 0, key);
+
+  this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST;
+  this.anchor.set(0.5);
+  this.checkWorldBounds = true;
+  this.outOfBoundsKill = true;
+  this.exists = false;
+  this.tracking = false;
+  this.scaleSpeed = 0;
+
+  //Change origin of sprite
+  this.offsetX = 20;
+  this.bottomOffsetY = 50;
+};
 /*
-* End Missile Logic
+* End Weapon Type Logic
 */
+
 
 /*
 * Begin Weapon Logic
@@ -64,8 +83,8 @@ Weapon.SingleMissile = function (game) {
     Phaser.Group.call(this, game, game.world, 'Single Missile', false, true, Phaser.Physics.ARCADE);
 
     this.nextFire = 0;
-    this.bulletSpeed = 550;
-    this.fireRate = 200;
+    this.bulletSpeed = 500;
+    this.fireRate = 250;
 
     for (var i = 0; i < 64; i++)
     {
@@ -90,6 +109,38 @@ Weapon.SingleMissile.prototype.fire = function (source) {
     this.nextFire = this.game.time.time + this.fireRate;
 };
 
+Weapon.DualShot = function(game){
+    Phaser.Group.call(this, game, game.world, 'Dual Shot', false, true, Phaser.Physics.ARCADE);
+
+    this.nextFire = 0;
+    this.bulletSpeed = 575;
+    this.fireRate = 185;
+
+    for (var i = 0; i < 64; i++)
+    {
+        this.add(new Missile(game, 'cannon'), true);
+    }
+
+    return this;
+};
+Weapon.DualShot.prototype = Object.create(Phaser.Group.prototype);
+Weapon.DualShot.prototype.constructor = Weapon.DualShot;
+
+Weapon.DualShot.prototype.fire = function (source) {
+    if (this.game.time.time < this.nextFire) {
+      return;
+    }
+
+    var x = source.x + 10;
+    var y = source.y + 10;
+    var offsetX = -8;
+    var topOffsetY = -25;
+    var bottomOffsetY = 25;
+
+    this.getFirstExists(false).fire(x + offsetX, y + topOffsetY, 0, this.bulletSpeed, 0, 0);
+    this.getFirstExists(false).fire(x + offsetX, y + bottomOffsetY, 0, this.bulletSpeed, 0, 0);
+    this.nextFire = this.game.time.time + this.fireRate;
+};
 /*
 * End Weapon Logic
 */
@@ -99,25 +150,28 @@ PhaserGame.prototype = {
     init: function () {
         this.game.renderer.renderSession.roundPixels = true;
         this.physics.startSystem(Phaser.Physics.ARCADE);
+        this.enterKeyUp = true;
     },
     preload: function () {
         //For live
-        //this.load.baseURL = '/PracticeShooter';
+        this.load.baseURL = '/PracticeShooter';
         //For dev
-        this.load.baseURL = '';
+        //this.load.baseURL = '';
 
         //Preload the sprite images
         this.load.image('background', '/img/cool-space-background2.jpg');
         this.load.image('player', '/img/ship1.png');
         this.load.image('missile', '/img/missile.png');
+        this.load.image('cannon', '/img/cannon.png');
     },
     create: function () {
         //Add background image
         this.background = this.add.tileSprite(0, 0, this.game.width, this.game.height, 'background');
-        this.background.autoScroll(-40, 0);
+        this.background.autoScroll(-30, 0);
 
         //Add weapons
         this.weapons.push(new Weapon.SingleMissile(this.game));
+        this.weapons.push(new Weapon.DualShot(this.game));
 
         //Add player
         this.player = this.add.sprite(64, 200, 'player');
@@ -128,6 +182,7 @@ PhaserGame.prototype = {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.input.keyboard.addKeyCapture([ Phaser.Keyboard.SPACEBAR ]);
 
+        this.input.keyboard.addKeyCapture([Phaser.Keyboard.ENTER]);
         //var changeKey = this.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         //changeKey.onDown.add(this.nextWeapon, this);
     },
@@ -151,6 +206,20 @@ PhaserGame.prototype = {
         if (this.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
           //FIRE DEFAULT EQUIPPED WEAPON
           this.weapons[this.currentWeapon].fire(this.player);
+        }
+        if(this.input.keyboard.isDown(Phaser.Keyboard.ENTER)){
+          if(this.enterKeyUp){
+            if(this.weapons.length > this.currentWeapon + 1){
+              this.currentWeapon++;
+            }
+            else{
+              this.currentWeapon = 0;
+            }
+            this.enterKeyUp = false;
+          }
+        }
+        else{
+          this.enterKeyUp = true;
         }
     }
 };
