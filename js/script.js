@@ -18,7 +18,7 @@ var PhaserGame = function () {
 * Begin Missile Logic
 */
 var Missile = function (game, key) {
-    Phaser.Sprite.call(this, game, 0, 50, key);
+    Phaser.Sprite.call(this, game, 0, 0, key);
 
     this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST;
     this.anchor.set(0.5);
@@ -27,6 +27,10 @@ var Missile = function (game, key) {
     this.exists = false;
     this.tracking = false;
     this.scaleSpeed = 0;
+
+    //To center the origin of the missile
+    this.offsetX = 35;
+    this.offsetY = 21;
 };
 Missile.prototype = Object.create(Phaser.Sprite.prototype);
 Missile.prototype.constructor = Missile;
@@ -35,7 +39,7 @@ Missile.prototype.fire = function (x, y, angle, speed, gx, gy) {
     gx = gx || 0;
     gy = gy || 0;
 
-    this.reset(x, y);
+    this.reset(x + this.offsetX, y + this.offsetY);
     this.scale.set(1);
     this.game.physics.arcade.velocityFromAngle(angle, speed, this.body.velocity);
     this.angle = angle;
@@ -60,8 +64,8 @@ Weapon.SingleMissile = function (game) {
     Phaser.Group.call(this, game, game.world, 'Single Missile', false, true, Phaser.Physics.ARCADE);
 
     this.nextFire = 0;
-    this.bulletSpeed = 600;
-    this.fireRate = 100;
+    this.bulletSpeed = 550;
+    this.fireRate = 200;
 
     for (var i = 0; i < 64; i++)
     {
@@ -69,7 +73,6 @@ Weapon.SingleMissile = function (game) {
     }
 
     return this;
-
 };
 
 Weapon.SingleMissile.prototype = Object.create(Phaser.Group.prototype);
@@ -98,12 +101,12 @@ PhaserGame.prototype = {
         this.physics.startSystem(Phaser.Physics.ARCADE);
     },
     preload: function () {
-        //Preload the sprite images
         //For live
-        this.load.baseURL = '/PracticeShooter';
-
+        //this.load.baseURL = '/PracticeShooter';
         //For dev
-        //this.load.baseURL = '/';
+        this.load.baseURL = '';
+
+        //Preload the sprite images
         this.load.image('background', '/img/cool-space-background2.jpg');
         this.load.image('player', '/img/ship1.png');
         this.load.image('missile', '/img/missile.png');
