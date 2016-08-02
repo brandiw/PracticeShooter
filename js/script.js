@@ -18,7 +18,7 @@ var PhaserGame = function () {
 * Begin Missile Logic
 */
 var Missile = function (game, key) {
-    Phaser.Sprite.call(this, game, 0, 0, key);
+    Phaser.Sprite.call(this, game, 0, 50, key);
 
     this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST;
     this.anchor.set(0.5);
@@ -98,13 +98,11 @@ PhaserGame.prototype = {
         this.physics.startSystem(Phaser.Physics.ARCADE);
     },
     preload: function () {
-        this.load.baseURL = '/';
-
+        //Preload the sprite images
+        this.load.baseURL = '/PracticeShooter';
         this.load.image('background', 'img/cool-space-background2.jpg');
-        //this.load.image('foreground', 'assets/fore.png');
         this.load.image('player', 'img/ship1.png');
-        this.load.image('missile', 'img/missile.png')
-        //this.load.bitmapFont('shmupfont', 'assets/shmupfont.png', 'assets/shmupfont.xml');
+        this.load.image('missile', 'img/missile.png');
     },
     create: function () {
         //Add background image
