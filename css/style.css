@@ -1,0 +1,47 @@
+/* style.css */
+body {
+  font-family: Verdana;
+}
+
+li{
+  border: 1px solid #777;
+  margin-bottom: 10px;
+  height: 50px;
+  background-color: #ddd;
+}
+
+.innerText{
+  padding: 25px 5px;
+}
+
+.red{
+  color: red;
+  background-color: #333;
+  padding: 3px;
+  border: 1px solid red;
+  float: right;
+  margin-top: 2px;
+  cursor: pointer;
+}
+
+#textInput {
+  width: 350px;
+  height: 25px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+#btnSubmit{
+  background-color: #0ff;
+  height: 30px;
+  width: 105px;
+  font-weight: bold;
+  font-size: 16px;
+  color: #555;
+  border: 2px solid #111;
+}
+
+.parallax-window {
+    min-height: 400px;
+    background: transparent;
+}
